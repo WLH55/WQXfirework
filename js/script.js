@@ -76,10 +76,15 @@ const mainStage = new Stage("main-canvas");
 const stages = [trailsStage, mainStage];
 
 //随机文字烟花内容
-const randomWords = ["新年快乐", "心想事成"];
+const randomWords = ["编制上岸", "编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸","编制上岸",
+"心想事成","心想事成","心想事成","心想事成","心想事成","心想事成","心想事成",
+"一约既定","一约既定","一约既定","一约既定","一约既定","一约既定",
+"万山无阻","万山无阻","万山无阻","万山无阻","万山无阻","万山无阻",
+"2024","2024","2024","2024","2024","2024","2024","2024","2024",
+"文千喜","文千喜","文千喜","文千喜","文千喜","文千喜","文千喜","文千喜",];
 const wordDotsMap = {};
 randomWords.forEach((word) => {
-	wordDotsMap[word] = MyMath.literalLattice(word, 3, "Gabriola,华文琥珀", "90px");
+	wordDotsMap[word] = MyMath.literalLattice(word, 3, "Gabriola,华文琥珀", "40px");
 });
 
 //全屏帮助程序，使用Fscreen作为前缀。
@@ -2209,40 +2214,87 @@ const Spark = {
 };
 
 //音效管理器
+// const soundManager = {
+// 	baseURL: "./audio/",
+// 	// baseURL: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/',
+// 	ctx: new (window.AudioContext || window.webkitAudioContext)(),
+// 	sources: {
+// 		lift: {
+// 			volume: 1,
+// 			playbackRateMin: 0.85,
+// 			playbackRateMax: 0.95,
+// 			fileNames: ["lift1.mp3", "lift2.mp3", "lift3.mp3"],
+// 		},
+// 		burst: {
+// 			volume: 1,
+// 			playbackRateMin: 0.8,
+// 			playbackRateMax: 0.9,
+// 			fileNames: ["burst1.mp3", "burst2.mp3"],
+// 		},
+// 		burstSmall: {
+// 			volume: 0.25,
+// 			playbackRateMin: 0.8,
+// 			playbackRateMax: 1,
+// 			fileNames: ["burst-sm-1.mp3", "burst-sm-2.mp3"],
+// 		},
+// 		crackle: {
+// 			volume: 0.2,
+// 			playbackRateMin: 1,
+// 			playbackRateMax: 1,
+// 			fileNames: ["crackle1.mp3"],
+// 		},
+// 		crackleSmall: {
+// 			volume: 0.3,
+// 			playbackRateMin: 1,
+// 			playbackRateMax: 1,
+// 			fileNames: ["crackle-sm-1.mp3"],
+// 		},
+// 	},
 const soundManager = {
-	baseURL: "./audio/",
-	ctx: new (window.AudioContext || window.webkitAudioContext)(),
+	// baseURL: './audio/',
+	baseURL: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/',
+	ctx: new (window.AudioContext || window.webkitAudioContext),
 	sources: {
 		lift: {
 			volume: 1,
 			playbackRateMin: 0.85,
 			playbackRateMax: 0.95,
-			fileNames: ["lift1.mp3", "lift2.mp3", "lift3.mp3"],
+			fileNames: [
+				'lift1.mp3',
+				'lift2.mp3',
+				'lift3.mp3'
+			]
 		},
 		burst: {
 			volume: 1,
 			playbackRateMin: 0.8,
 			playbackRateMax: 0.9,
-			fileNames: ["burst1.mp3", "burst2.mp3"],
+			fileNames: [
+				'burst1.mp3',
+				'burst2.mp3'
+			]
 		},
 		burstSmall: {
 			volume: 0.25,
 			playbackRateMin: 0.8,
 			playbackRateMax: 1,
-			fileNames: ["burst-sm-1.mp3", "burst-sm-2.mp3"],
+			fileNames: [
+				'burst-sm-1.mp3',
+				'burst-sm-2.mp3'
+			]
 		},
 		crackle: {
 			volume: 0.2,
 			playbackRateMin: 1,
 			playbackRateMax: 1,
-			fileNames: ["crackle1.mp3"],
+			fileNames: ['crackle1.mp3']
 		},
 		crackleSmall: {
 			volume: 0.3,
 			playbackRateMin: 1,
 			playbackRateMax: 1,
-			fileNames: ["crackle-sm-1.mp3"],
-		},
+			fileNames: ['crackle-sm-1.mp3']
+		}
 	},
 
 	preload() {
@@ -2258,35 +2310,33 @@ const soundManager = {
 		}
 
 		const types = Object.keys(this.sources);
-		types.forEach((type) => {
+		types.forEach(type => {
 			const source = this.sources[type];
 			const { fileNames } = source;
 			const filePromises = [];
-			fileNames.forEach((fileName) => {
+			fileNames.forEach(fileName => {
 				const fileURL = this.baseURL + fileName;
 				// Promise will resolve with decoded audio buffer.
 				const promise = fetch(fileURL)
 					.then(checkStatus)
-					.then((response) => response.arrayBuffer())
-					.then(
-						(data) =>
-							new Promise((resolve) => {
-								this.ctx.decodeAudioData(data, resolve);
-							})
-					);
+					.then(response => response.arrayBuffer())
+					.then(data => new Promise(resolve => {
+						this.ctx.decodeAudioData(data, resolve);
+					}));
 
 				filePromises.push(promise);
 				allFilePromises.push(promise);
 			});
 
-			Promise.all(filePromises).then((buffers) => {
-				source.buffers = buffers;
-			});
+			Promise.all(filePromises)
+				.then(buffers => {
+					source.buffers = buffers;
+				});
 		});
 
 		return Promise.all(allFilePromises);
 	},
-
+	
 	pauseAll() {
 		this.ctx.suspend();
 	},
